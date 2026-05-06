@@ -1,0 +1,103 @@
+# ============================================================
+# Python / Django Backend .gitignore
+# PostgreSQL database backend
+# ============================================================
+
+# Virtual environments
+venv/
+.env/
+env/
+ENV/
+.venv/
+backend/venv/
+backend/.venv/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+*.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Django files
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static_root/
+
+# PostgreSQL dumps / backups
+*.sql
+*.dump
+*.backup
+*.bak
+*.psql
+
+# Migrations cache
+*/migrations/__pycache__/
+
+# Keep migration files tracked
+!*/migrations/*.py
+!*/migrations/__init__.py
+
+# Celery / Redis / runtime files
+celerybeat-schedule
+celerybeat.pid
+*.pid
+*.sock
+
+# Test / coverage files
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# Build files
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# IDE / editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker local override files
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Node files if backend has frontend tooling
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Uploaded files / generated files
+uploads/
+exports/
+reports/
