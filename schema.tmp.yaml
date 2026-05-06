@@ -1,0 +1,6425 @@
+openapi: 3.0.3
+info:
+  title: AI-Enhanced Zimbabwe Tobacco Supply Chain API
+  version: 1.0.0
+  description: 'Backend API for the tobacco supply chain traceability platform. Errors
+    use a standard envelope: success=false, data=null, meta, errors[]. List endpoints
+    commonly return {results: [...]}; pagination uses page/limit (StandardPagination)
+    unless noted (e.g. sync/changes uses since_timestamp).'
+paths:
+  /api/v1/ai/analytics/anomalies/duplicates/export-labels/:
+    get:
+      operationId: ai_analytics_anomalies_duplicates_export_labels_retrieve
+      description: Export reviewer labels for duplicate/near-duplicate precision-recall
+        analysis.
+      tags:
+      - analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/anomalies/:
+    get:
+      operationId: ai_anomalies_retrieve
+      tags:
+      - ai
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/anomalies/{alert_id}/case/:
+    get:
+      operationId: ai_anomalies_case_retrieve
+      parameters:
+      - in: path
+        name: alert_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ai
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/anomalies/{alert_id}/export-link/:
+    get:
+      operationId: ai_anomalies_export_link_retrieve
+      description: 'Auditor/admin: mint a short-lived signed URL to download the case
+        packet JSON.'
+      parameters:
+      - in: path
+        name: alert_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ai
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/anomalies/{alert_id}/label/:
+    post:
+      operationId: ai_anomalies_label_create
+      parameters:
+      - in: path
+        name: alert_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewLabelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewLabelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewLabelRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewLabel'
+          description: ''
+  /api/v1/ai/anomalies/run/:
+    post:
+      operationId: ai_anomalies_run_create
+      tags:
+      - ai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnomalyRunRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnomalyRunRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnomalyRunRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnomalyRun'
+          description: ''
+  /api/v1/ai/assistant/chat/:
+    post:
+      operationId: ai_assistant_chat_create
+      tags:
+      - ai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantChatRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssistantChatRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssistantChatRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantChat'
+          description: ''
+  /api/v1/ai/exports/anomaly/:
+    get:
+      operationId: ai_exports_anomaly_retrieve
+      description: Public GET with signed token only. Re-validates user role and access
+        at download time.
+      tags:
+      - ai
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/forecasts/price/:
+    get:
+      operationId: ai_forecasts_price_retrieve
+      tags:
+      - ai
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceForecastQuery'
+          description: ''
+  /api/v1/ai/forecasts/retrain/:
+    post:
+      operationId: ai_forecasts_retrain_create
+      tags:
+      - ai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrainRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RetrainRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RetrainRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Retrain'
+          description: ''
+  /api/v1/ai/forecasts/yield/:
+    get:
+      operationId: ai_forecasts_yield_retrieve
+      tags:
+      - ai
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastQuery'
+          description: ''
+  /api/v1/ai/metrics/evaluation/:
+    get:
+      operationId: ai_metrics_evaluation_retrieve
+      description: Offline AUROC / MAPE hooks — auditors and admins only.
+      tags:
+      - ai
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationMetric'
+          description: ''
+    post:
+      operationId: ai_metrics_evaluation_create
+      description: Offline AUROC / MAPE hooks — auditors and admins only.
+      tags:
+      - ai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationMetricRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EvaluationMetricRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EvaluationMetricRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationMetric'
+          description: ''
+  /api/v1/ai/query/:
+    post:
+      operationId: ai_query_create
+      description: Legacy `/ai/query/` — same hardened assistant as `/ai/assistant/chat/`.
+      tags:
+      - ai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIQueryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AIQueryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AIQueryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIQuery'
+          description: ''
+  /api/v1/analytics/disputes/summary/:
+    get:
+      operationId: analytics_disputes_summary_retrieve
+      summary: Dispute lifecycle metrics for the org (auditor/admin).
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: Start date (YYYY-MM-DD)
+        required: true
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: End date (YYYY-MM-DD)
+        required: true
+      tags:
+      - disputes
+      - analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/ux/tasks/:
+    get:
+      operationId: analytics_ux_tasks_retrieve
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/change-password/:
+    post:
+      operationId: auth_change_password_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePassword'
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: JWT login returning access + refresh tokens.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      description: |-
+        POST /api/v1/auth/logout/
+        Blacklists the refresh token so it can no longer be used.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Logout'
+          description: ''
+  /api/v1/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      description: Get or update the current user's profile.
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+    put:
+      operationId: auth_me_update
+      description: Get or update the current user's profile.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+    patch:
+      operationId: auth_me_partial_update
+      description: Get or update the current user's profile.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+  /api/v1/auth/profile/buyer/:
+    get:
+      operationId: auth_profile_buyer_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerProfile'
+          description: ''
+    put:
+      operationId: auth_profile_buyer_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BuyerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BuyerProfileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerProfile'
+          description: ''
+    patch:
+      operationId: auth_profile_buyer_partial_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyerProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerProfile'
+          description: ''
+  /api/v1/auth/profile/farmer/:
+    get:
+      operationId: auth_profile_farmer_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfile'
+          description: ''
+    put:
+      operationId: auth_profile_farmer_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FarmerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FarmerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FarmerProfileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfile'
+          description: ''
+    patch:
+      operationId: auth_profile_farmer_partial_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfile'
+          description: ''
+  /api/v1/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: Public registration endpoint for new users.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/v1/auth/request-otp/:
+    post:
+      operationId: auth_request_otp_create
+      description: |-
+        POST /api/v1/auth/request-otp/
+        Accepts a phone number, validates the user exists and is eligible,
+        generates OTP, stores in Redis, enqueues WhatsApp delivery via Celery.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestOTPRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RequestOTPRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RequestOTPRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestOTP'
+          description: ''
+  /api/v1/auth/resend-otp/:
+    post:
+      operationId: auth_resend_otp_create
+      description: |-
+        POST /api/v1/auth/resend-otp/
+        Resend OTP if cooldown has elapsed.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendOTPRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResendOTPRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResendOTPRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendOTP'
+          description: ''
+  /api/v1/auth/verify-otp/:
+    post:
+      operationId: auth_verify_otp_create
+      description: |-
+        POST /api/v1/auth/verify-otp/
+        Verifies OTP and issues JWT tokens on success.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOTPRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerifyOTPRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifyOTPRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyOTP'
+          description: ''
+  /api/v1/blockchain/receipts/:
+    get:
+      operationId: blockchain_receipts_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: reference_type
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - CONFIRMED
+          - FAILED
+          - PENDING
+          - SUBMITTED
+        description: |-
+          * `PENDING` - Pending
+          * `SUBMITTED` - Submitted
+          * `CONFIRMED` - Confirmed
+          * `FAILED` - Failed
+      tags:
+      - blockchain
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBlockchainReceiptList'
+          description: ''
+  /api/v1/blockchain/verify/:
+    post:
+      operationId: blockchain_verify_create
+      tags:
+      - blockchain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnchorVerifyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnchorVerifyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnchorVerifyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnchorVerify'
+          description: ''
+  /api/v1/devices/register/:
+    post:
+      operationId: devices_register_create
+      description: Register or refresh an FCM/APNs device token for the current user.
+      tags:
+      - devices
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeviceRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeviceRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceRegistration'
+          description: ''
+  /api/v1/disputes/:
+    get:
+      operationId: disputes_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - document
+          - grading
+          - sale
+          - sequence
+        description: |-
+          * `grading` - Grading
+          * `sale` - Sale
+          * `document` - Document
+          * `sequence` - Trace sequence
+      - in: query
+        name: lot
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: sale
+        schema:
+          type: string
+          format: uuid
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - ESCALATED
+          - OPEN
+          - REJECTED
+          - RESOLVED
+          - UNDER_REVIEW
+        description: |-
+          * `OPEN` - Open
+          * `UNDER_REVIEW` - Under Review
+          * `RESOLVED` - Resolved
+          * `REJECTED` - Rejected
+          * `ESCALATED` - Escalated
+      tags:
+      - disputes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDisputeListList'
+          description: ''
+    post:
+      operationId: disputes_create
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DisputeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DisputeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          description: ''
+  /api/v1/disputes/{id}/:
+    get:
+      operationId: disputes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          description: ''
+    put:
+      operationId: disputes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DisputeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DisputeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          description: ''
+    patch:
+      operationId: disputes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDisputeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDisputeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDisputeRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          description: ''
+  /api/v1/disputes/{id}/case-packet/:
+    get:
+      operationId: disputes_case_packet_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/disputes/{id}/comments/:
+    post:
+      operationId: disputes_comments_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeCommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DisputeCommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DisputeCommentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeComment'
+          description: ''
+  /api/v1/disputes/{id}/label/:
+    post:
+      operationId: disputes_label_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeLabelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DisputeLabelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DisputeLabelRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeLabel'
+          description: ''
+  /api/v1/disputes/{id}/resolve/:
+    post:
+      operationId: disputes_resolve_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeResolveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DisputeResolveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DisputeResolveRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeResolve'
+          description: ''
+  /api/v1/disputes/{id}/respond/:
+    post:
+      operationId: disputes_respond_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeRespondRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DisputeRespondRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DisputeRespondRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeRespond'
+          description: ''
+  /api/v1/documents/:
+    get:
+      operationId: documents_list
+      parameters:
+      - in: query
+        name: anchor_status
+        schema:
+          type: string
+          enum:
+          - CONFIRMED
+          - FAILED
+          - PENDING
+          - SUBMITTED
+        description: |-
+          * `PENDING` - Pending
+          * `SUBMITTED` - Submitted
+          * `CONFIRMED` - Confirmed
+          * `FAILED` - Failed
+      - in: query
+        name: document_type
+        schema:
+          type: string
+          enum:
+          - CERTIFICATE
+          - DELIVERY_NOTE
+          - DISPUTE_EVIDENCE
+          - GRADING_SHEET
+          - INSPECTION_RECORD
+          - OTHER
+          - PROOF_OF_PAYMENT
+          - RECEIPT
+        description: |-
+          * `RECEIPT` - Receipt
+          * `CERTIFICATE` - Certificate
+          * `GRADING_SHEET` - Grading Sheet
+          * `DELIVERY_NOTE` - Delivery Note
+          * `INSPECTION_RECORD` - Inspection Record
+          * `PROOF_OF_PAYMENT` - Proof of Payment
+          * `DISPUTE_EVIDENCE` - Dispute Evidence
+          * `OTHER` - Other
+      - in: query
+        name: lot
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: verification_state
+        schema:
+          type: string
+          enum:
+          - ANCHORED
+          - HASHED
+          - UPLOADED
+          - VERIFIED
+        description: |-
+          * `UPLOADED` - Uploaded
+          * `HASHED` - Hashed
+          * `ANCHORED` - Anchored
+          * `VERIFIED` - Verified
+      tags:
+      - documents
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDocumentList'
+          description: ''
+    post:
+      operationId: documents_create
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DocumentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+  /api/v1/documents/{id}/:
+    get:
+      operationId: documents_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+  /api/v1/documents/{id}/verify/:
+    post:
+      operationId: documents_verify_create_2
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/documents/suspects/:
+    get:
+      operationId: documents_suspects_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - documents
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDocumentList'
+          description: ''
+  /api/v1/documents/verify/:
+    post:
+      operationId: documents_verify_create
+      description: Verify by SHA-256 or uploaded file (role-scoped matches).
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentVerifyRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DocumentVerifyRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentVerifyRequestRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentVerifyRequest'
+          description: ''
+  /api/v1/farms/:
+    get:
+      operationId: farms_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - farms
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFarmList'
+          description: ''
+    post:
+      operationId: farms_create
+      tags:
+      - farms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FarmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FarmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FarmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Farm'
+          description: ''
+  /api/v1/farms/{id}/:
+    get:
+      operationId: farms_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - farms
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Farm'
+          description: ''
+    put:
+      operationId: farms_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - farms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FarmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FarmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FarmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Farm'
+          description: ''
+    patch:
+      operationId: farms_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - farms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Farm'
+          description: ''
+  /api/v1/grading/:
+    get:
+      operationId: grading_list
+      parameters:
+      - in: query
+        name: grade
+        schema:
+          type: string
+      - in: query
+        name: lot
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - grading
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGradeRecordList'
+          description: ''
+    post:
+      operationId: grading_create
+      tags:
+      - grading
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeRecordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GradeRecordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GradeRecordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeRecord'
+          description: ''
+  /api/v1/grading/{id}/:
+    get:
+      operationId: grading_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - grading
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeRecord'
+          description: ''
+  /api/v1/health/:
+    get:
+      operationId: health_retrieve
+      tags:
+      - health
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/i18n/strings/:
+    get:
+      operationId: i18n_strings_retrieve
+      parameters:
+      - in: query
+        name: lang
+        schema:
+          type: string
+      tags:
+      - i18n
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/liveness/:
+    get:
+      operationId: liveness_retrieve
+      tags:
+      - liveness
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/lots/:
+    get:
+      operationId: lots_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: season
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - CURED
+          - DISPUTED
+          - DRAFT
+          - GRADED
+          - IN_CURING
+          - LISTED_FOR_SALE
+          - REGISTERED
+          - SETTLED
+          - SOLD
+        description: |-
+          * `DRAFT` - Draft
+          * `REGISTERED` - Registered
+          * `IN_CURING` - In Curing
+          * `CURED` - Cured
+          * `GRADED` - Graded
+          * `LISTED_FOR_SALE` - Listed for Sale
+          * `SOLD` - Sold
+          * `SETTLED` - Settled
+          * `DISPUTED` - Disputed
+      - in: query
+        name: tobacco_type
+        schema:
+          type: string
+      tags:
+      - lots
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLotList'
+          description: ''
+    post:
+      operationId: lots_create
+      tags:
+      - lots
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LotRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LotRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LotRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+          description: ''
+  /api/v1/lots/{id}/:
+    get:
+      operationId: lots_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - lots
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+          description: ''
+    put:
+      operationId: lots_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - lots
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LotRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LotRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LotRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+          description: ''
+    patch:
+      operationId: lots_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - lots
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLotRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLotRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLotRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+          description: ''
+  /api/v1/monitoring/drift/:
+    get:
+      operationId: monitoring_drift_retrieve
+      tags:
+      - monitoring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/monitoring/metrics/:
+    get:
+      operationId: monitoring_metrics_retrieve
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - monitoring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/monitoring/retrain/history/:
+    get:
+      operationId: monitoring_retrain_history_retrieve
+      tags:
+      - monitoring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/monitoring/summary/:
+    get:
+      operationId: monitoring_summary_retrieve
+      description: 'Farmers/buyers: non-sensitive headline only.'
+      tags:
+      - monitoring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/:
+    get:
+      operationId: notifications_list
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - in: query
+        name: notification_type
+        schema:
+          type: string
+          enum:
+          - ACTION_REQUIRED
+          - DISPUTE
+          - INFO
+          - SETTLEMENT
+          - SYSTEM
+          - WARNING
+        description: |-
+          * `INFO` - Info
+          * `WARNING` - Warning
+          * `ACTION_REQUIRED` - Action Required
+          * `SETTLEMENT` - Settlement
+          * `DISPUTE` - Dispute
+          * `SYSTEM` - System
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /api/v1/notifications/mark-read/:
+    post:
+      operationId: notifications_mark_read_create
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/organizations/:
+    get:
+      operationId: organizations_list
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: org_type
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizationList'
+          description: ''
+    post:
+      operationId: organizations_create
+      tags:
+      - organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /api/v1/organizations/{id}/:
+    get:
+      operationId: organizations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+    put:
+      operationId: organizations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+    patch:
+      operationId: organizations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /api/v1/organizations/memberships/:
+    get:
+      operationId: organizations_memberships_list
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: organization
+        schema:
+          type: string
+          format: uuid
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - BUYER_CONTRACTOR
+          - REGULATOR_AUDITOR
+          - SMALLHOLDER_FARMER
+          - SYSTEM_ADMIN
+        description: |-
+          * `SMALLHOLDER_FARMER` - Smallholder Farmer
+          * `BUYER_CONTRACTOR` - Buyer / Contractor
+          * `REGULATOR_AUDITOR` - Regulator / Auditor
+          * `SYSTEM_ADMIN` - System Admin
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizationMembershipList'
+          description: ''
+    post:
+      operationId: organizations_memberships_create
+      tags:
+      - organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationMembershipRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationMembershipRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationMembershipRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMembership'
+          description: ''
+  /api/v1/organizations/memberships/{id}/:
+    get:
+      operationId: organizations_memberships_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMembership'
+          description: ''
+    put:
+      operationId: organizations_memberships_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationMembershipRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationMembershipRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationMembershipRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMembership'
+          description: ''
+    patch:
+      operationId: organizations_memberships_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationMembershipRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationMembershipRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationMembershipRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMembership'
+          description: ''
+    delete:
+      operationId: organizations_memberships_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/preferences/me/:
+    get:
+      operationId: preferences_me_retrieve
+      tags:
+      - preferences
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferenceWrite'
+          description: ''
+    patch:
+      operationId: preferences_me_partial_update
+      tags:
+      - preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferenceWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferenceWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferenceWriteRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferenceWrite'
+          description: ''
+  /api/v1/privacy/me/erasure/:
+    post:
+      operationId: privacy_me_erasure_create
+      tags:
+      - privacy
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/privacy/me/export/:
+    get:
+      operationId: privacy_me_export_retrieve
+      tags:
+      - privacy
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/provenance/lots/{lot_id}/:
+    get:
+      operationId: provenance_lots_retrieve
+      parameters:
+      - in: path
+        name: lot_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - provenance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/readiness/:
+    get:
+      operationId: readiness_retrieve
+      tags:
+      - readiness
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/sales/:
+    get:
+      operationId: sales_list
+      parameters:
+      - in: query
+        name: currency
+        schema:
+          type: string
+      - in: query
+        name: lot
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: sale_type
+        schema:
+          type: string
+          enum:
+          - AUCTION
+          - DIRECT
+        description: |-
+          * `AUCTION` - Auction
+          * `DIRECT` - Direct Contract
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSaleList'
+          description: ''
+    post:
+      operationId: sales_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+  /api/v1/sales/{id}/:
+    get:
+      operationId: sales_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+  /api/v1/seasons/:
+    get:
+      operationId: seasons_list
+      parameters:
+      - in: query
+        name: crop_year
+        schema:
+          type: integer
+      - in: query
+        name: farm
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - COMPLETED
+          - HARVESTING
+          - PLANNING
+        description: |-
+          * `PLANNING` - Planning
+          * `ACTIVE` - Active
+          * `HARVESTING` - Harvesting
+          * `COMPLETED` - Completed
+      tags:
+      - seasons
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSeasonList'
+          description: ''
+    post:
+      operationId: seasons_create
+      tags:
+      - seasons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+  /api/v1/seasons/{id}/:
+    get:
+      operationId: seasons_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - seasons
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+    put:
+      operationId: seasons_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - seasons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+    patch:
+      operationId: seasons_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - seasons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSeasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSeasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSeasonRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+  /api/v1/settlements/:
+    get:
+      operationId: settlements_list
+      parameters:
+      - in: query
+        name: currency
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: sale
+        schema:
+          type: string
+          format: uuid
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - DISPUTED
+          - OVERDUE
+          - PAID
+          - PARTIAL
+          - PENDING
+        description: |-
+          * `PENDING` - Pending
+          * `PARTIAL` - Partially Paid
+          * `PAID` - Paid
+          * `OVERDUE` - Overdue
+          * `DISPUTED` - Disputed
+      tags:
+      - settlements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSettlementList'
+          description: ''
+    post:
+      operationId: settlements_create
+      tags:
+      - settlements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SettlementRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SettlementRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/settlements/{id}/:
+    get:
+      operationId: settlements_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - settlements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+    put:
+      operationId: settlements_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - settlements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SettlementRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SettlementRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+    patch:
+      operationId: settlements_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - settlements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSettlementRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSettlementRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSettlementRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/surveys/sus/response/:
+    post:
+      operationId: surveys_sus_response_create
+      tags:
+      - surveys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SusSurveyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SusSurveyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SusSurveyRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SusSurvey'
+          description: ''
+  /api/v1/surveys/sus/send/:
+    post:
+      operationId: surveys_sus_send_create
+      description: Record SUS delivery intent + optional immediate response.
+      tags:
+      - surveys
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/sync/:
+    post:
+      operationId: sync_create
+      tags:
+      - sync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchSyncRequest'
+          description: ''
+  /api/v1/sync/changes/:
+    get:
+      operationId: sync_changes_retrieve
+      description: |-
+        Pull server-side sync outcomes since a timestamp (ISO 8601).
+        Pagination: use `since` from the last `server_time` returned.
+      tags:
+      - sync
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/sync/documents/batch/:
+    post:
+      operationId: sync_documents_batch_create
+      description: Idempotent batch for document metadata (+ optional small file base64).
+      tags:
+      - sync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchSyncRequest'
+          description: ''
+  /api/v1/sync/events/batch/:
+    post:
+      operationId: sync_events_batch_create
+      description: Idempotent batch for trace / operational events (offline farmer
+        sync).
+      tags:
+      - sync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchSyncRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchSyncRequest'
+          description: ''
+  /api/v1/trace-events/:
+    get:
+      operationId: trace_events_list
+      parameters:
+      - in: query
+        name: anchor_status
+        schema:
+          type: string
+          enum:
+          - CONFIRMED
+          - FAILED
+          - PENDING
+          - SUBMITTED
+        description: |-
+          * `PENDING` - Pending
+          * `SUBMITTED` - Submitted
+          * `CONFIRMED` - Confirmed
+          * `FAILED` - Failed
+      - in: query
+        name: event_type
+        schema:
+          type: string
+          enum:
+          - CURING
+          - DELIVERY
+          - FERTILIZING
+          - GRADING
+          - HARVESTING
+          - INSPECTION
+          - OTHER
+          - PLANTING
+          - SALE
+          - STORAGE
+          - TRANSPORT
+        description: |-
+          * `PLANTING` - Planting
+          * `FERTILIZING` - Fertilizing
+          * `HARVESTING` - Harvesting
+          * `CURING` - Curing
+          * `STORAGE` - Storage
+          * `TRANSPORT` - Transport
+          * `GRADING` - Grading
+          * `SALE` - Sale
+          * `DELIVERY` - Delivery
+          * `INSPECTION` - Inspection
+          * `OTHER` - Other
+      - in: query
+        name: lot
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - trace-events
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTraceEventList'
+          description: ''
+    post:
+      operationId: trace_events_create
+      tags:
+      - trace-events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraceEventRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TraceEventRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TraceEventRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraceEvent'
+          description: ''
+  /api/v1/trace-events/{id}/:
+    get:
+      operationId: trace_events_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - trace-events
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraceEvent'
+          description: ''
+  /api/v1/users/:
+    get:
+      operationId: users_list
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - BUYER_CONTRACTOR
+          - REGULATOR_AUDITOR
+          - SMALLHOLDER_FARMER
+          - SYSTEM_ADMIN
+        description: |-
+          * `SMALLHOLDER_FARMER` - Smallholder Farmer
+          * `BUYER_CONTRACTOR` - Buyer / Contractor
+          * `REGULATOR_AUDITOR` - Regulator / Auditor
+          * `SYSTEM_ADMIN` - System Admin
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+  /api/v1/users/{id}/:
+    get:
+      operationId: users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: users_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/users/create/:
+    post:
+      operationId: users_create_create
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminUserCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminUserCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserCreate'
+          description: ''
+  /api/v1/ux/guided-forms/:
+    get:
+      operationId: ux_guided_forms_retrieve
+      parameters:
+      - in: query
+        name: lang
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      tags:
+      - ux
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/whatsapp/status/:
+    post:
+      operationId: whatsapp_status_create
+      description: |-
+        Delivery status callback from WhatsApp provider.
+        Updates message log with delivery/read status.
+      tags:
+      - whatsapp
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/whatsapp/webhook/:
+    post:
+      operationId: whatsapp_webhook_create
+      description: |-
+        Inbound WhatsApp webhook.
+        Validates provider signature, resolves contact, routes through intent engine,
+        and dispatches reply asynchronously.
+      tags:
+      - whatsapp
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /whatsapp/webhook/:
+    post:
+      operationId: whatsapp_webhook_create_2
+      description: |-
+        Inbound WhatsApp webhook.
+        Validates provider signature, resolves contact, routes through intent engine,
+        and dispatches reply asynchronously.
+      tags:
+      - whatsapp
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    AIQuery:
+      type: object
+      properties:
+        prompt:
+          type: string
+          maxLength: 2000
+        context: {}
+      required:
+      - prompt
+    AIQueryRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        context: {}
+      required:
+      - prompt
+    AdminUserCreate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+    AdminUserCreateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        is_active:
+          type: boolean
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+    AnchorStatusEnum:
+      enum:
+      - PENDING
+      - SUBMITTED
+      - CONFIRMED
+      - FAILED
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `SUBMITTED` - Submitted
+        * `CONFIRMED` - Confirmed
+        * `FAILED` - Failed
+    AnchorVerify:
+      type: object
+      properties:
+        tx_hash:
+          type: string
+          maxLength: 66
+      required:
+      - tx_hash
+    AnchorVerifyRequest:
+      type: object
+      properties:
+        tx_hash:
+          type: string
+          minLength: 1
+          maxLength: 66
+      required:
+      - tx_hash
+    AnomalyRun:
+      type: object
+      properties:
+        detection_types:
+          type: array
+          items:
+            type: string
+    AnomalyRunRequest:
+      type: object
+      properties:
+        detection_types:
+          type: array
+          items:
+            type: string
+            minLength: 1
+    AssistantChat:
+      type: object
+      properties:
+        prompt:
+          type: string
+          maxLength: 8000
+        conversation_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - prompt
+    AssistantChatRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        conversation_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - prompt
+    BatchSyncRequest:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncItem'
+      required:
+      - records
+    BatchSyncRequestRequest:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncItemRequest'
+      required:
+      - records
+    BlankEnum:
+      enum:
+      - ''
+    BlockchainReceipt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference_type:
+          type: string
+          maxLength: 50
+        reference_id:
+          type: string
+          format: uuid
+        tx_hash:
+          type: string
+          maxLength: 66
+        block_number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        chain_id:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        contract_address:
+          type: string
+          maxLength: 42
+        method_name:
+          type: string
+          maxLength: 100
+        data_hash:
+          type: string
+          maxLength: 64
+        status:
+          $ref: '#/components/schemas/Status11fEnum'
+        gas_used:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - reference_id
+      - reference_type
+      - tx_hash
+    BuyerProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        company_name:
+          type: string
+          maxLength: 200
+        license_number:
+          type: string
+          maxLength: 100
+        buyer_type:
+          type: string
+          maxLength: 50
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - company_name
+      - created_at
+      - id
+      - updated_at
+    BuyerProfileRequest:
+      type: object
+      properties:
+        company_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        license_number:
+          type: string
+          maxLength: 100
+        buyer_type:
+          type: string
+          maxLength: 50
+      required:
+      - company_name
+    CategoryEnum:
+      enum:
+      - grading
+      - sale
+      - document
+      - sequence
+      type: string
+      description: |-
+        * `grading` - Grading
+        * `sale` - Sale
+        * `document` - Document
+        * `sequence` - Trace sequence
+    ChangePassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+      required:
+      - new_password
+      - old_password
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          minLength: 8
+      required:
+      - new_password
+      - old_password
+    ChannelEnum:
+      enum:
+      - flutter
+      - whatsapp
+      type: string
+      description: |-
+        * `flutter` - Flutter
+        * `whatsapp` - WhatsApp
+    DeviceRegistration:
+      type: object
+      properties:
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+    DeviceRegistrationRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 512
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+      required:
+      - token
+    Dispute:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        organization:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lot:
+          type: string
+          format: uuid
+          nullable: true
+        sale:
+          type: string
+          format: uuid
+          nullable: true
+        raised_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        assigned_to:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          oneOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        related_trace_event_ids: {}
+        related_document_ids: {}
+        related_anomaly_ids: {}
+        opened_by_role:
+          type: string
+          readOnly: true
+        first_response_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        resolved_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StatusC51Enum'
+        resolution:
+          type: string
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        raised_by_name:
+          type: string
+          readOnly: true
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisputeComment'
+          readOnly: true
+        comment_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - comment_count
+      - comments
+      - created_at
+      - description
+      - first_response_at
+      - id
+      - opened_by_role
+      - organization
+      - raised_by
+      - raised_by_name
+      - resolved_at
+      - resolved_by
+      - title
+      - updated_at
+    DisputeComment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        dispute:
+          type: string
+          format: uuid
+        author:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        body:
+          type: string
+        is_evidence:
+          type: boolean
+        attachment:
+          type: string
+          format: uri
+          nullable: true
+        author_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - author_name
+      - body
+      - created_at
+      - dispute
+      - id
+    DisputeCommentRequest:
+      type: object
+      properties:
+        dispute:
+          type: string
+          format: uuid
+        body:
+          type: string
+          minLength: 1
+        is_evidence:
+          type: boolean
+        attachment:
+          type: string
+          format: binary
+          nullable: true
+      required:
+      - body
+      - dispute
+    DisputeLabel:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        notes:
+          type: string
+          default: ''
+      required:
+      - label
+    DisputeLabelRequest:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        notes:
+          type: string
+          default: ''
+      required:
+      - label
+    DisputeList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lot:
+          type: string
+          format: uuid
+          nullable: true
+        sale:
+          type: string
+          format: uuid
+          nullable: true
+        raised_by:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/StatusC51Enum'
+        category:
+          oneOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        raised_by_name:
+          type: string
+          readOnly: true
+        comment_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - comment_count
+      - created_at
+      - id
+      - raised_by_name
+      - title
+    DisputeRequest:
+      type: object
+      properties:
+        lot:
+          type: string
+          format: uuid
+          nullable: true
+        sale:
+          type: string
+          format: uuid
+          nullable: true
+        assigned_to:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          minLength: 1
+        category:
+          oneOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        related_trace_event_ids: {}
+        related_document_ids: {}
+        related_anomaly_ids: {}
+        status:
+          $ref: '#/components/schemas/StatusC51Enum'
+        resolution:
+          type: string
+      required:
+      - description
+      - title
+    DisputeResolve:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/DisputeResolveStatusEnum'
+        resolution_notes:
+          type: string
+          default: ''
+      required:
+      - status
+    DisputeResolveRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/DisputeResolveStatusEnum'
+        resolution_notes:
+          type: string
+          default: ''
+      required:
+      - status
+    DisputeResolveStatusEnum:
+      enum:
+      - RESOLVED
+      - REJECTED
+      type: string
+      description: |-
+        * `RESOLVED` - RESOLVED
+        * `REJECTED` - REJECTED
+    DisputeRespond:
+      type: object
+      properties:
+        body:
+          type: string
+          maxLength: 8000
+        is_evidence:
+          type: boolean
+          default: false
+      required:
+      - body
+    DisputeRespondRequest:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        is_evidence:
+          type: boolean
+          default: false
+      required:
+      - body
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        organization:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lot:
+          type: string
+          format: uuid
+          nullable: true
+        uploaded_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        file:
+          type: string
+          format: uri
+        file_name:
+          type: string
+          readOnly: true
+        mime_type:
+          type: string
+          readOnly: true
+        file_size:
+          type: integer
+          readOnly: true
+        sha256_hash:
+          type: string
+          readOnly: true
+        storage_pointer_hash:
+          type: string
+          readOnly: true
+        verification_state:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStateEnum'
+          readOnly: true
+        anchor_status:
+          allOf:
+          - $ref: '#/components/schemas/AnchorStatusEnum'
+          readOnly: true
+        anchor_tx_hash:
+          type: string
+          readOnly: true
+        uploaded_by_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - anchor_status
+      - anchor_tx_hash
+      - created_at
+      - document_type
+      - file
+      - file_name
+      - file_size
+      - id
+      - mime_type
+      - organization
+      - sha256_hash
+      - storage_pointer_hash
+      - title
+      - updated_at
+      - uploaded_by
+      - uploaded_by_name
+      - verification_state
+    DocumentRequest:
+      type: object
+      properties:
+        lot:
+          type: string
+          format: uuid
+          nullable: true
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        file:
+          type: string
+          format: binary
+      required:
+      - document_type
+      - file
+      - title
+    DocumentTypeEnum:
+      enum:
+      - RECEIPT
+      - CERTIFICATE
+      - GRADING_SHEET
+      - DELIVERY_NOTE
+      - INSPECTION_RECORD
+      - PROOF_OF_PAYMENT
+      - DISPUTE_EVIDENCE
+      - OTHER
+      type: string
+      description: |-
+        * `RECEIPT` - Receipt
+        * `CERTIFICATE` - Certificate
+        * `GRADING_SHEET` - Grading Sheet
+        * `DELIVERY_NOTE` - Delivery Note
+        * `INSPECTION_RECORD` - Inspection Record
+        * `PROOF_OF_PAYMENT` - Proof of Payment
+        * `DISPUTE_EVIDENCE` - Dispute Evidence
+        * `OTHER` - Other
+    DocumentVerifyRequest:
+      type: object
+      properties:
+        doc_hash:
+          type: string
+          maxLength: 64
+        file:
+          type: string
+          format: uri
+    DocumentVerifyRequestRequest:
+      type: object
+      properties:
+        doc_hash:
+          type: string
+          maxLength: 64
+        file:
+          type: string
+          format: binary
+    EvaluationMetric:
+      type: object
+      properties:
+        metric_name:
+          type: string
+          maxLength: 64
+        model_key:
+          type: string
+          maxLength: 64
+        model_version:
+          type: string
+          default: ''
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,6})?$
+          nullable: true
+        metrics_json: {}
+        notes:
+          type: string
+          default: ''
+      required:
+      - metric_name
+      - model_key
+    EvaluationMetricRequest:
+      type: object
+      properties:
+        metric_name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        model_key:
+          type: string
+          minLength: 1
+          maxLength: 64
+        model_version:
+          type: string
+          default: ''
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,6})?$
+          nullable: true
+        metrics_json: {}
+        notes:
+          type: string
+          default: ''
+      required:
+      - metric_name
+      - model_key
+    EventTypeEnum:
+      enum:
+      - PLANTING
+      - FERTILIZING
+      - HARVESTING
+      - CURING
+      - STORAGE
+      - TRANSPORT
+      - GRADING
+      - SALE
+      - DELIVERY
+      - INSPECTION
+      - OTHER
+      type: string
+      description: |-
+        * `PLANTING` - Planting
+        * `FERTILIZING` - Fertilizing
+        * `HARVESTING` - Harvesting
+        * `CURING` - Curing
+        * `STORAGE` - Storage
+        * `TRANSPORT` - Transport
+        * `GRADING` - Grading
+        * `SALE` - Sale
+        * `DELIVERY` - Delivery
+        * `INSPECTION` - Inspection
+        * `OTHER` - Other
+    Farm:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          maxLength: 255
+        location_description:
+          type: string
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        size_hectares:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        district:
+          type: string
+          maxLength: 100
+        province:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        owner_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - owner
+      - owner_name
+      - updated_at
+    FarmRequest:
+      type: object
+      properties:
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        location_description:
+          type: string
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        size_hectares:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        district:
+          type: string
+          maxLength: 100
+        province:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+      required:
+      - name
+    FarmerProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        national_id:
+          type: string
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        ward:
+          type: string
+          maxLength: 100
+        village:
+          type: string
+          maxLength: 100
+        bank_name:
+          type: string
+          maxLength: 100
+        bank_account_number:
+          type: string
+          maxLength: 50
+        mobile_money_number:
+          type: string
+          maxLength: 20
+        years_of_experience:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - national_id
+      - updated_at
+    FarmerProfileRequest:
+      type: object
+      properties:
+        national_id:
+          type: string
+          minLength: 1
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        ward:
+          type: string
+          maxLength: 100
+        village:
+          type: string
+          maxLength: 100
+        bank_name:
+          type: string
+          maxLength: 100
+        bank_account_number:
+          type: string
+          maxLength: 50
+        mobile_money_number:
+          type: string
+          maxLength: 20
+        years_of_experience:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - national_id
+    ForecastQuery:
+      type: object
+      properties:
+        season_id:
+          type: string
+          format: uuid
+          nullable: true
+        farm_id:
+          type: string
+          format: uuid
+          nullable: true
+        lot_id:
+          type: string
+          format: uuid
+          nullable: true
+        scope:
+          type: string
+          default: ''
+    GradeRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lot:
+          type: string
+          format: uuid
+        graded_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        grade:
+          type: string
+          maxLength: 20
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        moisture_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        quality_score:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        notes:
+          type: string
+        graded_at:
+          type: string
+          format: date-time
+        graded_by_name:
+          type: string
+          readOnly: true
+        lot_number:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - grade
+      - graded_at
+      - graded_by
+      - graded_by_name
+      - id
+      - lot
+      - lot_number
+      - updated_at
+      - weight_kg
+    GradeRecordRequest:
+      type: object
+      properties:
+        lot:
+          type: string
+          format: uuid
+        grade:
+          type: string
+          minLength: 1
+          maxLength: 20
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        moisture_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        quality_score:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        notes:
+          type: string
+        graded_at:
+          type: string
+          format: date-time
+      required:
+      - grade
+      - graded_at
+      - lot
+      - weight_kg
+    LabelEnum:
+      enum:
+      - confirmed
+      - false_positive
+      - needs_info
+      type: string
+      description: |-
+        * `confirmed` - confirmed
+        * `false_positive` - false_positive
+        * `needs_info` - needs_info
+    LiteracyModeEnum:
+      enum:
+      - normal
+      - guided
+      type: string
+      description: |-
+        * `normal` - Normal
+        * `guided` - Guided (low-literacy)
+    Logout:
+      type: object
+      properties:
+        refresh:
+          type: string
+      required:
+      - refresh
+    LogoutRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    Lot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        season:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lot_number:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        bale_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        tobacco_type:
+          type: string
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/LotStatusEnum'
+        blockchain_anchor_hash:
+          type: string
+          readOnly: true
+        farm_name:
+          type: string
+          readOnly: true
+        crop_year:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - blockchain_anchor_hash
+      - created_at
+      - created_by
+      - crop_year
+      - farm_name
+      - id
+      - lot_number
+      - season
+      - updated_at
+    LotRequest:
+      type: object
+      properties:
+        season:
+          type: string
+          format: uuid
+        lot_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        bale_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        tobacco_type:
+          type: string
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/LotStatusEnum'
+      required:
+      - lot_number
+      - season
+    LotStatusEnum:
+      enum:
+      - DRAFT
+      - REGISTERED
+      - IN_CURING
+      - CURED
+      - GRADED
+      - LISTED_FOR_SALE
+      - SOLD
+      - SETTLED
+      - DISPUTED
+      type: string
+      description: |-
+        * `DRAFT` - Draft
+        * `REGISTERED` - Registered
+        * `IN_CURING` - In Curing
+        * `CURED` - Cured
+        * `GRADED` - Graded
+        * `LISTED_FOR_SALE` - Listed for Sale
+        * `SOLD` - Sold
+        * `SETTLED` - Settled
+        * `DISPUTED` - Disputed
+    ModelTypeEnum:
+      enum:
+      - yield
+      - price
+      type: string
+      description: |-
+        * `yield` - yield
+        * `price` - price
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        recipient:
+          type: string
+          format: uuid
+          readOnly: true
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        title:
+          type: string
+          maxLength: 255
+        body:
+          type: string
+        is_read:
+          type: boolean
+        reference_type:
+          type: string
+          maxLength: 50
+        reference_id:
+          type: string
+          format: uuid
+          nullable: true
+        metadata: {}
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - recipient
+      - title
+    NotificationTypeEnum:
+      enum:
+      - INFO
+      - WARNING
+      - ACTION_REQUIRED
+      - SETTLEMENT
+      - DISPUTE
+      - SYSTEM
+      type: string
+      description: |-
+        * `INFO` - Info
+        * `WARNING` - Warning
+        * `ACTION_REQUIRED` - Action Required
+        * `SETTLEMENT` - Settlement
+        * `DISPUTE` - Dispute
+        * `SYSTEM` - System
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        org_type:
+          type: string
+          maxLength: 50
+        registration_number:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    OrganizationMembership:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          type: string
+          format: uuid
+        organization:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_primary:
+          type: boolean
+        is_active:
+          type: boolean
+        user_email:
+          type: string
+          readOnly: true
+        user_name:
+          type: string
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - organization
+      - organization_name
+      - role
+      - updated_at
+      - user
+      - user_email
+      - user_name
+    OrganizationMembershipRequest:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+        organization:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_primary:
+          type: boolean
+        is_active:
+          type: boolean
+      required:
+      - organization
+      - role
+      - user
+    OrganizationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        org_type:
+          type: string
+          maxLength: 50
+        registration_number:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+        is_active:
+          type: boolean
+      required:
+      - name
+    PaginatedBlockchainReceiptList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockchainReceipt'
+    PaginatedDisputeListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisputeList'
+    PaginatedDocumentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+    PaginatedFarmList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Farm'
+    PaginatedGradeRecordList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GradeRecord'
+    PaginatedLotList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lot'
+    PaginatedNotificationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedOrganizationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
+    PaginatedOrganizationMembershipList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationMembership'
+    PaginatedSaleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sale'
+    PaginatedSeasonList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Season'
+    PaginatedSettlementList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Settlement'
+    PaginatedTraceEventList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TraceEvent'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PatchedBuyerProfileRequest:
+      type: object
+      properties:
+        company_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        license_number:
+          type: string
+          maxLength: 100
+        buyer_type:
+          type: string
+          maxLength: 50
+    PatchedDisputeRequest:
+      type: object
+      properties:
+        lot:
+          type: string
+          format: uuid
+          nullable: true
+        sale:
+          type: string
+          format: uuid
+          nullable: true
+        assigned_to:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          minLength: 1
+        category:
+          oneOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        related_trace_event_ids: {}
+        related_document_ids: {}
+        related_anomaly_ids: {}
+        status:
+          $ref: '#/components/schemas/StatusC51Enum'
+        resolution:
+          type: string
+    PatchedFarmRequest:
+      type: object
+      properties:
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        location_description:
+          type: string
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        size_hectares:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        district:
+          type: string
+          maxLength: 100
+        province:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+    PatchedFarmerProfileRequest:
+      type: object
+      properties:
+        national_id:
+          type: string
+          minLength: 1
+          maxLength: 50
+        district:
+          type: string
+          maxLength: 100
+        ward:
+          type: string
+          maxLength: 100
+        village:
+          type: string
+          maxLength: 100
+        bank_name:
+          type: string
+          maxLength: 100
+        bank_account_number:
+          type: string
+          maxLength: 50
+        mobile_money_number:
+          type: string
+          maxLength: 20
+        years_of_experience:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedLotRequest:
+      type: object
+      properties:
+        season:
+          type: string
+          format: uuid
+        lot_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        bale_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        tobacco_type:
+          type: string
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/LotStatusEnum'
+    PatchedOrganizationMembershipRequest:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+        organization:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_primary:
+          type: boolean
+        is_active:
+          type: boolean
+    PatchedOrganizationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        org_type:
+          type: string
+          maxLength: 50
+        registration_number:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+        is_active:
+          type: boolean
+    PatchedSeasonRequest:
+      type: object
+      properties:
+        farm:
+          type: string
+          format: uuid
+        crop_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/SeasonStatusEnum'
+        planting_date:
+          type: string
+          format: date
+          nullable: true
+        expected_harvest_date:
+          type: string
+          format: date
+          nullable: true
+        actual_harvest_date:
+          type: string
+          format: date
+          nullable: true
+        expected_yield_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        actual_yield_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        notes:
+          type: string
+    PatchedSettlementRequest:
+      type: object
+      properties:
+        sale:
+          type: string
+          format: uuid
+        farmer:
+          type: string
+          format: uuid
+          nullable: true
+        amount_due:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        status:
+          $ref: '#/components/schemas/SettlementStatusEnum'
+        payment_reference:
+          type: string
+          maxLength: 200
+        payment_method:
+          type: string
+          maxLength: 50
+        payment_date:
+          type: string
+          format: date-time
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+    PatchedUserDetailRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+    PatchedUserPreferenceWriteRequest:
+      type: object
+      properties:
+        preferred_language:
+          $ref: '#/components/schemas/PreferredLanguageEnum'
+        literacy_mode:
+          $ref: '#/components/schemas/LiteracyModeEnum'
+        voice_mode_enabled:
+          type: boolean
+    PatchedUserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+    PayloadTypeEnum:
+      enum:
+      - farm
+      - season
+      - lot
+      - trace_event
+      - document_meta
+      - dispute
+      type: string
+      description: |-
+        * `farm` - farm
+        * `season` - season
+        * `lot` - lot
+        * `trace_event` - trace_event
+        * `document_meta` - document_meta
+        * `dispute` - dispute
+    PlatformEnum:
+      enum:
+      - android
+      - ios
+      - web
+      type: string
+      description: |-
+        * `android` - android
+        * `ios` - ios
+        * `web` - web
+    PreferredLanguageEnum:
+      enum:
+      - en
+      - sn
+      - nd
+      type: string
+      description: |-
+        * `en` - English
+        * `sn` - Shona
+        * `nd` - Ndebele
+    PriceForecastQuery:
+      type: object
+      properties:
+        season_id:
+          type: string
+          format: uuid
+          nullable: true
+        grade:
+          type: string
+          default: ''
+        scope:
+          type: string
+          default: ''
+    Register:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - password_confirm
+    RequestOTP:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          maxLength: 20
+      required:
+      - phone_number
+    RequestOTPRequest:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - phone_number
+    ResendOTP:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          maxLength: 20
+      required:
+      - phone_number
+    ResendOTPRequest:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - phone_number
+    Retrain:
+      type: object
+      properties:
+        model_type:
+          allOf:
+          - $ref: '#/components/schemas/ModelTypeEnum'
+          default: yield
+    RetrainRequest:
+      type: object
+      properties:
+        model_type:
+          allOf:
+          - $ref: '#/components/schemas/ModelTypeEnum'
+          default: yield
+    ReviewLabel:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        notes:
+          type: string
+          default: ''
+      required:
+      - label
+    ReviewLabelRequest:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        notes:
+          type: string
+          default: ''
+      required:
+      - label
+    RoleEnum:
+      enum:
+      - SMALLHOLDER_FARMER
+      - BUYER_CONTRACTOR
+      - REGULATOR_AUDITOR
+      - SYSTEM_ADMIN
+      type: string
+      description: |-
+        * `SMALLHOLDER_FARMER` - Smallholder Farmer
+        * `BUYER_CONTRACTOR` - Buyer / Contractor
+        * `REGULATOR_AUDITOR` - Regulator / Auditor
+        * `SYSTEM_ADMIN` - System Admin
+    Sale:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lot:
+          type: string
+          format: uuid
+        buyer:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        sale_type:
+          $ref: '#/components/schemas/SaleTypeEnum'
+        price_per_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total_weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 3
+        sale_date:
+          type: string
+          format: date-time
+        auction_floor_reference:
+          type: string
+          maxLength: 100
+        contract_reference:
+          type: string
+          maxLength: 100
+        notes:
+          type: string
+        buyer_name:
+          type: string
+          readOnly: true
+        lot_number:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - buyer
+      - buyer_name
+      - created_at
+      - id
+      - lot
+      - lot_number
+      - price_per_kg
+      - sale_date
+      - total_amount
+      - total_weight_kg
+      - updated_at
+    SaleRequest:
+      type: object
+      properties:
+        lot:
+          type: string
+          format: uuid
+        sale_type:
+          $ref: '#/components/schemas/SaleTypeEnum'
+        price_per_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total_weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        sale_date:
+          type: string
+          format: date-time
+        auction_floor_reference:
+          type: string
+          maxLength: 100
+        contract_reference:
+          type: string
+          maxLength: 100
+        notes:
+          type: string
+      required:
+      - lot
+      - price_per_kg
+      - sale_date
+      - total_amount
+      - total_weight_kg
+    SaleTypeEnum:
+      enum:
+      - AUCTION
+      - DIRECT
+      type: string
+      description: |-
+        * `AUCTION` - Auction
+        * `DIRECT` - Direct Contract
+    Season:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        farm:
+          type: string
+          format: uuid
+        crop_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/SeasonStatusEnum'
+        planting_date:
+          type: string
+          format: date
+          nullable: true
+        expected_harvest_date:
+          type: string
+          format: date
+          nullable: true
+        actual_harvest_date:
+          type: string
+          format: date
+          nullable: true
+        expected_yield_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        actual_yield_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        notes:
+          type: string
+        farm_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - crop_year
+      - farm
+      - farm_name
+      - id
+      - updated_at
+    SeasonRequest:
+      type: object
+      properties:
+        farm:
+          type: string
+          format: uuid
+        crop_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/SeasonStatusEnum'
+        planting_date:
+          type: string
+          format: date
+          nullable: true
+        expected_harvest_date:
+          type: string
+          format: date
+          nullable: true
+        actual_harvest_date:
+          type: string
+          format: date
+          nullable: true
+        expected_yield_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        actual_yield_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        notes:
+          type: string
+      required:
+      - crop_year
+      - farm
+    SeasonStatusEnum:
+      enum:
+      - PLANNING
+      - ACTIVE
+      - HARVESTING
+      - COMPLETED
+      type: string
+      description: |-
+        * `PLANNING` - Planning
+        * `ACTIVE` - Active
+        * `HARVESTING` - Harvesting
+        * `COMPLETED` - Completed
+    Settlement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        sale:
+          type: string
+          format: uuid
+        farmer:
+          type: string
+          format: uuid
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        amount_due:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 3
+        status:
+          $ref: '#/components/schemas/SettlementStatusEnum'
+        payment_reference:
+          type: string
+          maxLength: 200
+        payment_method:
+          type: string
+          maxLength: 50
+        payment_date:
+          type: string
+          format: date-time
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+        farmer_name:
+          type: string
+          readOnly: true
+        lot_number:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount_due
+      - created_at
+      - created_by
+      - farmer_name
+      - id
+      - lot_number
+      - sale
+      - updated_at
+    SettlementRequest:
+      type: object
+      properties:
+        sale:
+          type: string
+          format: uuid
+        farmer:
+          type: string
+          format: uuid
+          nullable: true
+        amount_due:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        amount_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        status:
+          $ref: '#/components/schemas/SettlementStatusEnum'
+        payment_reference:
+          type: string
+          maxLength: 200
+        payment_method:
+          type: string
+          maxLength: 50
+        payment_date:
+          type: string
+          format: date-time
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+      required:
+      - amount_due
+      - sale
+    SettlementStatusEnum:
+      enum:
+      - PENDING
+      - PARTIAL
+      - PAID
+      - OVERDUE
+      - DISPUTED
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `PARTIAL` - Partially Paid
+        * `PAID` - Paid
+        * `OVERDUE` - Overdue
+        * `DISPUTED` - Disputed
+    Status11fEnum:
+      enum:
+      - PENDING
+      - SUBMITTED
+      - CONFIRMED
+      - FAILED
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `SUBMITTED` - Submitted
+        * `CONFIRMED` - Confirmed
+        * `FAILED` - Failed
+    StatusC51Enum:
+      enum:
+      - OPEN
+      - UNDER_REVIEW
+      - RESOLVED
+      - REJECTED
+      - ESCALATED
+      type: string
+      description: |-
+        * `OPEN` - Open
+        * `UNDER_REVIEW` - Under Review
+        * `RESOLVED` - Resolved
+        * `REJECTED` - Rejected
+        * `ESCALATED` - Escalated
+    SusSurvey:
+      type: object
+      properties:
+        scores_json: {}
+        channel:
+          default: flutter
+          oneOf:
+          - $ref: '#/components/schemas/ChannelEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+    SusSurveyRequest:
+      type: object
+      properties:
+        scores_json: {}
+        channel:
+          default: flutter
+          oneOf:
+          - $ref: '#/components/schemas/ChannelEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+    SyncItem:
+      type: object
+      properties:
+        client_record_id:
+          type: string
+          format: uuid
+        idempotency_key:
+          type: string
+          maxLength: 255
+        payload_type:
+          $ref: '#/components/schemas/PayloadTypeEnum'
+        payload: {}
+      required:
+      - client_record_id
+      - idempotency_key
+      - payload
+      - payload_type
+    SyncItemRequest:
+      type: object
+      properties:
+        client_record_id:
+          type: string
+          format: uuid
+        idempotency_key:
+          type: string
+          minLength: 1
+          maxLength: 255
+        payload_type:
+          $ref: '#/components/schemas/PayloadTypeEnum'
+        payload: {}
+      required:
+      - client_record_id
+      - idempotency_key
+      - payload
+      - payload_type
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TraceEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lot:
+          type: string
+          format: uuid
+        actor:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
+        timestamp:
+          type: string
+          format: date-time
+        location:
+          type: string
+          maxLength: 255
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        payload: {}
+        notes:
+          type: string
+        prev_event_hash:
+          type: string
+          description: Omit to append to chain tip; set explicitly to prove client
+            chain state.
+          maxLength: 64
+        event_hash:
+          type: string
+          readOnly: true
+        anchor_status:
+          allOf:
+          - $ref: '#/components/schemas/AnchorStatusEnum'
+          readOnly: true
+        anchor_tx_hash:
+          type: string
+          readOnly: true
+        actor_name:
+          type: string
+          readOnly: true
+        lot_number:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actor
+      - actor_name
+      - anchor_status
+      - anchor_tx_hash
+      - created_at
+      - event_hash
+      - event_type
+      - id
+      - lot
+      - lot_number
+      - timestamp
+    TraceEventRequest:
+      type: object
+      properties:
+        lot:
+          type: string
+          format: uuid
+        event_type:
+          $ref: '#/components/schemas/EventTypeEnum'
+        timestamp:
+          type: string
+          format: date-time
+        location:
+          type: string
+          maxLength: 255
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+        payload: {}
+        notes:
+          type: string
+        prev_event_hash:
+          type: string
+          description: Omit to append to chain tip; set explicitly to prove client
+            chain state.
+          maxLength: 64
+      required:
+      - event_type
+      - lot
+      - timestamp
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+      required:
+      - date_joined
+      - email
+      - first_name
+      - full_name
+      - id
+      - last_name
+      - organization_id
+      - organization_name
+      - role
+      - updated_at
+    UserDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        farmer_profile:
+          type: string
+          readOnly: true
+        buyer_profile:
+          type: string
+          readOnly: true
+      required:
+      - buyer_profile
+      - date_joined
+      - email
+      - farmer_profile
+      - first_name
+      - full_name
+      - id
+      - last_name
+      - organization_id
+      - organization_name
+      - role
+      - updated_at
+    UserDetailRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+      required:
+      - first_name
+      - last_name
+    UserPreferenceWrite:
+      type: object
+      properties:
+        preferred_language:
+          $ref: '#/components/schemas/PreferredLanguageEnum'
+        literacy_mode:
+          $ref: '#/components/schemas/LiteracyModeEnum'
+        voice_mode_enabled:
+          type: boolean
+    UserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+      required:
+      - first_name
+      - last_name
+    VerificationStateEnum:
+      enum:
+      - UPLOADED
+      - HASHED
+      - ANCHORED
+      - VERIFIED
+      type: string
+      description: |-
+        * `UPLOADED` - Uploaded
+        * `HASHED` - Hashed
+        * `ANCHORED` - Anchored
+        * `VERIFIED` - Verified
+    VerifyOTP:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          maxLength: 20
+        code:
+          type: string
+          maxLength: 10
+          minLength: 4
+      required:
+      - code
+      - phone_number
+    VerifyOTPRequest:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          minLength: 1
+          maxLength: 20
+        code:
+          type: string
+          minLength: 4
+          maxLength: 10
+      required:
+      - code
+      - phone_number
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

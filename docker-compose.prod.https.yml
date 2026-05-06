@@ -1,0 +1,11 @@
+# Optional overlay: publish HTTPS after TLS is configured (DNS + certs + generated nginx config).
+# Used automatically when INCLUDE_HTTPS_PORT=1 ./deploy/vps-deploy.sh ...
+#
+# Manual:
+#   docker compose --env-file .env.production \
+#     -f docker-compose.prod.yml -f docker-compose.prod.https.yml up -d
+
+services:
+  nginx:
+    ports:
+      - "${NGINX_HTTPS_PORT:-443}:443"

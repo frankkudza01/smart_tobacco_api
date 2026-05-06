@@ -1,0 +1,171 @@
+"""
+Minimal ABI for TobaccoTraceability.sol — used by Web3BlockchainGateway.
+Keep in sync with hardhat/contracts/TobaccoTraceability.sol.
+"""
+
+TOBACCO_TRACEABILITY_ABI = [
+    {
+        "inputs": [
+            {"internalType": "bytes32", "name": "_dataHash", "type": "bytes32"},
+            {"internalType": "string", "name": "_referenceType", "type": "string"},
+            {"internalType": "string", "name": "_referenceId", "type": "string"},
+        ],
+        "name": "anchorEventHash",
+        "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"internalType": "bytes32", "name": "_dataHash", "type": "bytes32"},
+            {"internalType": "string", "name": "_referenceId", "type": "string"},
+        ],
+        "name": "anchorDocumentHash",
+        "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [{"internalType": "bytes32", "name": "_anchorId", "type": "bytes32"}],
+        "name": "verifyAnchor",
+        "outputs": [
+            {"internalType": "bytes32", "name": "dataHash", "type": "bytes32"},
+            {"internalType": "string", "name": "referenceType", "type": "string"},
+            {"internalType": "string", "name": "referenceId", "type": "string"},
+            {"internalType": "uint256", "name": "timestamp", "type": "uint256"},
+            {"internalType": "address", "name": "submitter", "type": "address"},
+        ],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"internalType": "bytes32", "name": "_merkleRoot", "type": "bytes32"},
+            {"internalType": "string", "name": "_batchType", "type": "string"},
+            {"internalType": "string", "name": "_batchLabel", "type": "string"},
+            {"internalType": "uint256", "name": "_leafCount", "type": "uint256"},
+        ],
+        "name": "anchorBatchRoot",
+        "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [{"internalType": "bytes32", "name": "_batchId", "type": "bytes32"}],
+        "name": "verifyBatchRoot",
+        "outputs": [
+            {"internalType": "bytes32", "name": "merkleRoot", "type": "bytes32"},
+            {"internalType": "uint256", "name": "leafCount", "type": "uint256"},
+            {"internalType": "string", "name": "batchType", "type": "string"},
+            {"internalType": "string", "name": "batchLabel", "type": "string"},
+            {"internalType": "uint256", "name": "timestamp", "type": "uint256"},
+            {"internalType": "address", "name": "submitter", "type": "address"},
+        ],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {"indexed": True, "internalType": "bytes32", "name": "batchId", "type": "bytes32"},
+            {"indexed": True, "internalType": "bytes32", "name": "merkleRoot", "type": "bytes32"},
+            {"indexed": False, "internalType": "uint256", "name": "leafCount", "type": "uint256"},
+            {"indexed": False, "internalType": "string", "name": "batchType", "type": "string"},
+            {"indexed": False, "internalType": "string", "name": "batchLabel", "type": "string"},
+            {"indexed": True, "internalType": "address", "name": "submitter", "type": "address"},
+            {"indexed": False, "internalType": "uint256", "name": "timestamp", "type": "uint256"},
+        ],
+        "name": "BatchRootAnchored",
+        "type": "event",
+    },
+    {
+        "inputs": [
+            {"internalType": "string", "name": "_lotId", "type": "string"},
+            {"internalType": "bytes32", "name": "_dataHash", "type": "bytes32"},
+            {"internalType": "uint256", "name": "_score", "type": "uint256"},
+            {"internalType": "string", "name": "_notesUri", "type": "string"},
+        ],
+        "name": "attestInspection",
+        "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [{"internalType": "bytes32", "name": "_inspectionId", "type": "bytes32"}],
+        "name": "verifyInspection",
+        "outputs": [
+            {"internalType": "string", "name": "lotId", "type": "string"},
+            {"internalType": "bytes32", "name": "dataHash", "type": "bytes32"},
+            {"internalType": "uint256", "name": "score", "type": "uint256"},
+            {"internalType": "string", "name": "notesUri", "type": "string"},
+            {"internalType": "address", "name": "inspector", "type": "address"},
+            {"internalType": "uint256", "name": "timestamp", "type": "uint256"},
+        ],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {"indexed": True, "internalType": "bytes32", "name": "inspectionId", "type": "bytes32"},
+            {"indexed": False, "internalType": "string", "name": "lotId", "type": "string"},
+            {"indexed": True, "internalType": "address", "name": "inspector", "type": "address"},
+            {"indexed": False, "internalType": "uint256", "name": "score", "type": "uint256"},
+            {"indexed": False, "internalType": "bytes32", "name": "dataHash", "type": "bytes32"},
+            {"indexed": False, "internalType": "string", "name": "notesUri", "type": "string"},
+            {"indexed": False, "internalType": "uint256", "name": "timestamp", "type": "uint256"},
+        ],
+        "name": "InspectionAttested",
+        "type": "event",
+    },
+    {
+        "inputs": [
+            {"internalType": "string", "name": "_lotId", "type": "string"},
+            {"internalType": "address", "name": "_from", "type": "address"},
+            {"internalType": "address", "name": "_to", "type": "address"},
+            {"internalType": "bytes32", "name": "_payloadHash", "type": "bytes32"},
+            {"internalType": "uint256", "name": "_weightGrams", "type": "uint256"},
+            {"internalType": "uint256", "name": "_timestamp", "type": "uint256"},
+        ],
+        "name": "recordCustodyTransfer",
+        "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {"indexed": False, "internalType": "string", "name": "lotId", "type": "string"},
+            {"indexed": True, "internalType": "address", "name": "fromParty", "type": "address"},
+            {"indexed": True, "internalType": "address", "name": "toParty", "type": "address"},
+            {"indexed": False, "internalType": "bytes32", "name": "payloadHash", "type": "bytes32"},
+            {"indexed": False, "internalType": "uint256", "name": "weightGrams", "type": "uint256"},
+            {"indexed": False, "internalType": "uint256", "name": "timestamp", "type": "uint256"},
+            {"indexed": True, "internalType": "address", "name": "submitter", "type": "address"},
+        ],
+        "name": "CustodyTransferred",
+        "type": "event",
+    },
+    {
+        "inputs": [
+            {"internalType": "bytes32", "name": "_originalAnchorId", "type": "bytes32"},
+            {"internalType": "bytes32", "name": "_reasonHash", "type": "bytes32"},
+        ],
+        "name": "revokeAnchor",
+        "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {"indexed": True, "internalType": "bytes32", "name": "originalAnchorId", "type": "bytes32"},
+            {"indexed": True, "internalType": "bytes32", "name": "revocationId", "type": "bytes32"},
+            {"indexed": True, "internalType": "address", "name": "revoker", "type": "address"},
+            {"indexed": False, "internalType": "bytes32", "name": "reasonHash", "type": "bytes32"},
+            {"indexed": False, "internalType": "uint256", "name": "timestamp", "type": "uint256"},
+        ],
+        "name": "AnchorRevoked",
+        "type": "event",
+    },
+]

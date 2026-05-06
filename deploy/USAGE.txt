@@ -1,0 +1,50 @@
+VPS deploy helpers (run on the Linux server; bash required)
+
+Process mapping vs local terminals
+- Django `runserver 0.0.0.0:8000` -> production stack uses Gunicorn behind Nginx (binding 0.0.0.0:8000 inside the `web` container); API on host port 80 (and 443 when TLS is enabled).
+- `celery -A config worker` -> service `celery_worker` (compose uses `celery -A config.celery_app worker`, same app).
+- `celery -A config beat` -> service `celery_beat` (`celery -A config.celery_app beat` with django-celery-beat database scheduler).
+- Hardhat `npm install && npm run compile && npm run test:solidity` -> done when building the `hardhat` image (`SKIP_HARDHAT_TESTS=1` skips Solidity tests on slow builders).
+- `npm run node` -> service `hardhat` (profile `blockchain`): Hardhat listens on 0.0.0.0:8545 inside the container.
+- `npm run deploy:local` -> run `bash deploy/deploy-hardhat-contract.sh` after the stack is up with profile `blockchain`; uses `--network docker` and RPC `http://hardhat:8545`. Copy printed env / `hardhat/deployment-docker.json` into `.env.production`.
+
+1) First boot (HTTP)
+   cp .env.production.example .env.production
+   # Edit secrets, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, DATABASE_URL, etc.
+   bash deploy/vps-deploy.sh up -d --build
+   bash deploy/vps-deploy.sh exec web python manage.py createsuperuser
+
+1b) Optional Hardhat chain on the VPS
+   COMPOSE_PROFILES=blockchain bash deploy/vps-deploy.sh up -d --build
+   bash deploy/deploy-hardhat-contract.sh
+   # Merge printed BLOCKCHAIN_* lines into .env.production (use BLOCKCHAIN_PROVIDER_URL=http://hardhat:8545 for Django/Celery in Compose).
+   COMPOSE_PROFILES=blockchain bash deploy/vps-deploy.sh up -d --force-recreate web celery_worker celery_beat
+
+2) Let's Encrypt (needs a real DNS name, not only an IP)
+   - Point TLS_DOMAIN (A/AAAA) at this machine.
+   - Set in .env.production:
+       TLS_DOMAIN=api.example.com
+       LETSENCRYPT_EMAIL=you@example.com
+       # Optional extra hostnames on the same cert:
+       # TLS_DOMAIN_EXTRA=www.example.com,api.example.com
+   - Ensure nginx is still on nginx.prod.conf (default NGINX_SITE_CONF=nginx.prod.conf).
+   - bash deploy/request-cert.sh
+   - bash deploy/render-nginx-tls.sh
+   - In .env.production set:
+       NGINX_SITE_CONF=generated.tls.conf
+       DJANGO_USE_TLS=True
+       SECURE_SSL_REDIRECT=True
+       DJANGO_ALLOWED_HOSTS=api.example.com
+       CSRF_TRUSTED_ORIGINS=https://api.example.com
+       CORS_ALLOWED_ORIGINS=https://your-frontend-origin
+   - Open firewall TCP 443 if needed.
+   - INCLUDE_HTTPS_PORT=1 bash deploy/vps-deploy.sh up -d --force-recreate nginx web celery_worker celery_beat
+
+3) Cert renewal (cron)
+   bash deploy/renew-certs.sh
+
+Notes
+- docker/nginx/generated.tls.conf is generated; do not edit by hand.
+- Keep using docker-compose.yml + .env on your dev machine; production uses docker-compose.prod.yml only on the VPS.
+- Hardhat RPC on production Compose defaults to host bind `127.0.0.1:${HARDHAT_HOST_PORT:-8545}` -> map tools via SSH; set HARDHAT_BIND=0.0.0.0 only if you intentionally expose JSON-RPC on all interfaces.
+

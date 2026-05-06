@@ -1,0 +1,7 @@
+node_modules
+cache
+artifacts
+coverage
+deployment-localhost.json
+deployment-docker.json
+.git
